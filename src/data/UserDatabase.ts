@@ -23,13 +23,19 @@ export class UserDatabase extends BaseDatabase {
     }
   }
 
-  public async getUserByEmail(email: string): Promise<User> {
-    const result = await this.getConnection()
-      .select("*")
-      .from(UserDatabase.TABLE_NAME)
-      .where({ email });
-
-    return User.toUserModel(result[0]);
+  public async getUserByEmail(
+    email: string
+  ): Promise<User> {
+    try {
+      const result = await this.getConnection()
+        .select("*")
+        .from(UserDatabase.TABLE_NAME)
+        .where({ email });
+  
+      return User.toUserModel(result[0]);
+    } catch (error) {
+      throw new Error(error.sqlMessage || error.message);
+    }
   }
 
 }

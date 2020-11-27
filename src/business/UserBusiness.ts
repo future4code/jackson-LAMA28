@@ -1,15 +1,22 @@
-import UserDatabase from "../data/UserDatabase";
-import UnprocessableEntityError from "../error/UnprocessableEntityError";
 import { LoginInputDTO, User, UserInputDTO } from "../model/User";
-import Authenticator from "../services/Authenticator";
-import HashManager from "../services/HashManager";
-import IdGenerator from "../services/IdGenerator";
+import UnauthorizedError from "../error/UnauthorizedError";
+import UnprocessableEntityError from "../error/UnprocessableEntityError";
+import authenticator,{ Authenticator } from "../services/Authenticator";
+import hashManager, { HashManager } from "../services/HashManager";
+import idGenerator, { IdGenerator } from "../services/IdGenerator";
+import userDatabase, { UserDatabase } from "../data/UserDatabase";
 
 export class UserBusiness {
 
-    async createUser(user: UserInputDTO) {
-        try {
+    constructor(
+        private idGenerator: IdGenerator,
+        private hashManager: HashManager,
+        private authenticator: Authenticator,
+        private userDatabase: UserDatabase
+    ) {}
 
+    async createUser(user: UserInputDTO):Promise<string> {
+        try {
             if (user.email.indexOf("@") === -1) {
                 throw new UnprocessableEntityError("Invalid Email!")
             }
@@ -18,11 +25,11 @@ export class UserBusiness {
                 throw new UnprocessableEntityError("Invalid Password!")
             }
 
-            const id = IdGenerator.generate();
+            const id = this.idGenerator.generate();
 
-            const hashPassword = await HashManager.hash(user.password);
+            const hashPassword = await this.hashManager.hash(user.password);
 
-            await UserDatabase.createUser(
+            await this.userDatabase.createUser(
                 new User(
                     id,
                     user.email,
@@ -32,7 +39,7 @@ export class UserBusiness {
                 )
             );
 
-            const accessToken = Authenticator.generateToken({
+            const accessToken = this.authenticator.generateToken({
                 id,
                 role: user.role
             });
@@ -46,19 +53,39 @@ export class UserBusiness {
     }
 
     async getUserByEmail(user: LoginInputDTO) {
+        try {
+            const userFromDB = await this.userDatabase.getUserByEmail(user.email);
 
-        const userFromDB = await UserDatabase.getUserByEmail(user.email);
+            if (!userFromDB) {
+                throw new UnauthorizedError("Invalid credentials")
+            }
 
-        const hashCompare = await HashManager.compare(user.password, userFromDB.getPassword());
+            const hashCompare = await this.hashManager.compare(
+                user.password,
+                userFromDB.getPassword()
+            );
+            
+            if (!hashCompare) {
+                throw new UnauthorizedError("Invalid credentials");
+            }
 
-        const accessToken = Authenticator.generateToken({ id: userFromDB.getId(), role: userFromDB.getRole() });
+            const accessToken = this.authenticator.generateToken({
+                id: userFromDB.getId(),
+                role: userFromDB.getRole()
+            });
 
-        if (!hashCompare) {
-            throw new Error("Invalid Password!");
+            return accessToken;
+        } catch (error) {
+            throw new Error(error.message)
         }
 
-        return accessToken;
+        
     }
 }
 
-export default new UserBusiness();
+export default new UserBusiness(
+    idGenerator,
+    hashManager,
+    authenticator,
+    userDatabase
+);
