@@ -5,6 +5,7 @@ import authenticator,{ Authenticator } from "../services/Authenticator";
 import hashManager, { HashManager } from "../services/HashManager";
 import idGenerator, { IdGenerator } from "../services/IdGenerator";
 import userDatabase, { UserDatabase } from "../data/UserDatabase";
+import ConflictError from "../error/ConflictError";
 
 export class UserBusiness {
 
@@ -17,36 +18,52 @@ export class UserBusiness {
 
     async createUser(user: UserInputDTO):Promise<string> {
         try {
-            if (user.email.indexOf("@") === -1) {
-                throw new UnprocessableEntityError("Invalid Email!")
+            const { name, email, password, role } = user;
+
+            if (!name || !email || !password || !role) {
+                throw new UnprocessableEntityError("Missing input");
             }
 
-            if (user.password.length < 6) {
-                throw new UnprocessableEntityError("Invalid Password!")
+            if (email.indexOf("@") === -1) {
+                throw new UnprocessableEntityError("Invalid Email!");
+            }
+
+            if (password.length < 6) {
+                throw new UnprocessableEntityError("Invalid Password!");
             }
 
             const id = this.idGenerator.generate();
 
-            const hashPassword = await this.hashManager.hash(user.password);
+            const hashPassword = await this.hashManager.hash(password);
 
             await this.userDatabase.createUser(
                 new User(
                     id,
-                    user.email,
-                    user.name,
+                    name,
+                    email,
                     hashPassword,
-                    User.stringToUserRole(user.role)
+                    User.stringToUserRole(role)
                 )
             );
 
             const accessToken = this.authenticator.generateToken({
                 id,
-                role: user.role
+                role
             });
 
             return accessToken;
         } catch (error) {
-            throw new Error(error.message)
+            const { code, message } = error;
+
+            if (error.message.includes("for key 'email'")) {
+                throw new ConflictError("Email already in use")
+            }
+
+            if (code === 422) {
+                throw new UnprocessableEntityError(message);
+            }
+
+            throw new Error(message);
         }
 
         
@@ -54,14 +71,20 @@ export class UserBusiness {
 
     async getUserByEmail(user: LoginInputDTO):Promise<string> {
         try {
-            const userFromDB = await this.userDatabase.getUserByEmail(user.email);
+            const { email, password } = user;
+
+            if (!email || !password) {
+                throw new UnprocessableEntityError("Missing input");
+             }
+
+            const userFromDB = await this.userDatabase.getUserByEmail(email);
 
             if (!userFromDB) {
                 throw new UnauthorizedError("Invalid credentials")
             }
 
             const hashCompare = await this.hashManager.compare(
-                user.password,
+                password,
                 userFromDB.getPassword()
             );
             
@@ -76,7 +99,16 @@ export class UserBusiness {
 
             return accessToken;
         } catch (error) {
-            throw new Error(error.message)
+            const { code, message } = error;
+
+            switch (code) {
+                case 422:
+                    throw new UnprocessableEntityError(message);
+                case 401:
+                    throw new UnauthorizedError(message);
+                default:
+                    throw new Error(error.message);
+            }
         }
 
         
