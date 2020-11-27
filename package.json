@@ -8,7 +8,7 @@
     "dev": "clear && ts-node-dev ./src/index.ts",
     "build": "clear && echo \"Transpiling files...\" && tsc && echo \"Done!\" ",
     "mysql-setup": "clear && tsc && node ./build/src/migrations/MySqlSetup.js",
-    "mysql-reset": "clear && tsc && node ./build/src/migrations/MySqlReset.js",
+    "mysql-reset": "clear && tsc && node ./build/src/migrations/MySqlReset.js && node ./build/src/migrations/MySqlSetup.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

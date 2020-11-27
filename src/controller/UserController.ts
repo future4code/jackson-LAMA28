@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { UserInputDTO, LoginInputDTO} from "../model/User";
-import { BaseDatabase } from "../data/BaseDatabase";
+import BaseDatabase from "../data/BaseDatabase";
 import UserBusiness from "../business/UserBusiness";
 
 export class UserController {
-    async signup(req: Request, res: Response) {
+    async signup(req: Request, res: Response):Promise<void> {
         try {
             const input: UserInputDTO = {
                 email: req.body.email,
@@ -24,7 +24,7 @@ export class UserController {
         await BaseDatabase.destroyConnection();
     }
 
-    async login(req: Request, res: Response) {
+    async login(req: Request, res: Response):Promise<void> {
         try {
             const loginData: LoginInputDTO = {
                 email: req.body.email,

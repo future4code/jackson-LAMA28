@@ -1,25 +1,20 @@
-import { BaseDatabase } from "../data/BaseDatabase";
-import MySqlSetup from "./MySqlSetup";
+import BaseDatabase from "../data/BaseDatabase";
 
 class MySqlReset extends BaseDatabase {
 
-  async resetTables():Promise<void> {
+  async dropTables():Promise<void> {
     try {
       await this.getConnection()
-        .raw(`DROP TABLE LAMA_SHOWS;`);
+        .raw(`DROP TABLE IF EXISTS LAMA_SHOWS;`);
       
       await this.getConnection()
-        .raw(`DROP TABLE LAMA_BANDS;`);
+        .raw(`DROP TABLE IF EXISTS LAMA_BANDS;`);
       
       await this.getConnection()
-        .raw(`DROP TABLE LAMA_USERS;`);
+        .raw(`DROP TABLE IF EXISTS LAMA_USERS;`);
 
       console.log("MySql tables dropped...");
       console.log("Recreating MySql tables ...");
-
-      await new MySqlSetup().createTables();
-
-      console.log("MySql reset completed!");
     } catch (error) {
       console.log(error);
     }
@@ -29,4 +24,4 @@ class MySqlReset extends BaseDatabase {
 
 }
 
-new MySqlReset().resetTables();
+new MySqlReset().dropTables();

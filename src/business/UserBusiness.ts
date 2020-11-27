@@ -52,7 +52,7 @@ export class UserBusiness {
         
     }
 
-    async getUserByEmail(user: LoginInputDTO) {
+    async getUserByEmail(user: LoginInputDTO):Promise<string> {
         try {
             const userFromDB = await this.userDatabase.getUserByEmail(user.email);
 

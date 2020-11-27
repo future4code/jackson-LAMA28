@@ -1,11 +1,11 @@
-import { BaseDatabase } from "../data/BaseDatabase";
+import BaseDatabase from "../data/BaseDatabase";
 
 export default class MySqlSetup extends BaseDatabase {
 
   async createTables():Promise<void> {
     try {
-      await this.getConnection()
-        .raw(`
+
+      await this.getConnection().raw(`
           CREATE TABLE IF NOT EXISTS LAMA_USERS (
             id VARCHAR(255) PRIMARY KEY,
             name VARCHAR(255) NOT NULL,
@@ -14,7 +14,7 @@ export default class MySqlSetup extends BaseDatabase {
             role VARCHAR(255) NOT NULL DEFAULT "NORMAL"
           );
         `);
-      
+
       await this.getConnection()
         .raw(`
           CREATE TABLE IF NOT EXISTS LAMA_BANDS (
@@ -33,13 +33,13 @@ export default class MySqlSetup extends BaseDatabase {
           start_time INT NOT NULL,
           end_time INT NOT NULL,
           band_id VARCHAR(255) NOT NULL,
-          FOREIGN KEY(band_id) REFERENCES NOME_TABELA_BANDAS(id)
+          FOREIGN KEY(band_id) REFERENCES LAMA_BANDS(id)
         );
       `);
       
       console.log("MySql setup completed!");
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
     }
 
     await BaseDatabase.destroyConnection();
