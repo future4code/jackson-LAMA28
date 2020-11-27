@@ -1,5 +1,6 @@
 import UserDatabase from "../data/UserDatabase";
-import { LoginInputDTO, UserInputDTO } from "../model/User";
+import UnprocessableEntityError from "../error/UnprocessableEntityError";
+import { LoginInputDTO, User, UserInputDTO } from "../model/User";
 import Authenticator from "../services/Authenticator";
 import HashManager from "../services/HashManager";
 import IdGenerator from "../services/IdGenerator";
@@ -7,16 +8,41 @@ import IdGenerator from "../services/IdGenerator";
 export class UserBusiness {
 
     async createUser(user: UserInputDTO) {
+        try {
 
-        const id = IdGenerator.generate();
+            if (user.email.indexOf("@") === -1) {
+                throw new UnprocessableEntityError("Invalid Email!")
+            }
 
-        const hashPassword = await HashManager.hash(user.password);
+            if (user.password.length < 6) {
+                throw new UnprocessableEntityError("Invalid Password!")
+            }
 
-        await UserDatabase.createUser(id, user.email, user.name, hashPassword, user.role);
+            const id = IdGenerator.generate();
 
-        const accessToken = Authenticator.generateToken({ id, role: user.role });
+            const hashPassword = await HashManager.hash(user.password);
 
-        return accessToken;
+            await UserDatabase.createUser(
+                new User(
+                    id,
+                    user.email,
+                    user.name,
+                    hashPassword,
+                    User.stringToUserRole(user.role)
+                )
+            );
+
+            const accessToken = Authenticator.generateToken({
+                id,
+                role: user.role
+            });
+
+            return accessToken;
+        } catch (error) {
+            throw new Error(error.message)
+        }
+
+        
     }
 
     async getUserByEmail(user: LoginInputDTO) {

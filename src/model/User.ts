@@ -1,3 +1,5 @@
+import UnprocessableEntityError from "../error/UnprocessableEntityError";
+
 export class User{
     constructor(
     private id: string,
@@ -54,15 +56,19 @@ export class User{
             case "ADMIN":
                 return UserRole.ADMIN;
             default:
-                throw new Error("Invalid user role");
+                throw new UnprocessableEntityError("Invalid user role");
         }
     }
 
     static toUserModel(user: any): User {
-        return new User(user.id, user.name, user.email, user.password, User.stringToUserRole(user.role));
+        return new User(
+            user.id,
+            user.name,
+            user.email,
+            user.password,
+            User.stringToUserRole(user.role)
+        );
     }
-
-
 }
 
 export interface UserInputDTO{
