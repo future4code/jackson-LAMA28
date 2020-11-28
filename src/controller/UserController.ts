@@ -18,7 +18,6 @@ export class UserController {
             res.status(201).send({ token });
         } catch (error) {
             const { code, message } = error;
-            console.log(code)
             res.status(code || 400).send({ message });
         }
 

@@ -14,14 +14,14 @@ export class UserBusiness {
         private hashManager: HashManager,
         private authenticator: Authenticator,
         private userDatabase: UserDatabase
-    ) {}
+    ){}
 
     async createUser(user: UserInputDTO):Promise<string> {
         try {
             const { name, email, password, role } = user;
 
             if (!name || !email || !password || !role) {
-                throw new UnprocessableEntityError("Missing input");
+                throw new UnprocessableEntityError("Missing inputs");
             }
 
             if (email.indexOf("@") === -1) {
@@ -32,9 +32,9 @@ export class UserBusiness {
                 throw new UnprocessableEntityError("Invalid Password!");
             }
 
-            const id = this.idGenerator.generate();
+            const id: string = this.idGenerator.generate();
 
-            const hashPassword = await this.hashManager.hash(password);
+            const hashPassword: string = await this.hashManager.hash(password);
 
             await this.userDatabase.createUser(
                 new User(
@@ -46,7 +46,7 @@ export class UserBusiness {
                 )
             );
 
-            const accessToken = this.authenticator.generateToken({
+            const accessToken: string = this.authenticator.generateToken({
                 id,
                 role
             });
@@ -74,7 +74,7 @@ export class UserBusiness {
             const { email, password } = user;
 
             if (!email || !password) {
-                throw new UnprocessableEntityError("Missing input");
+                throw new UnprocessableEntityError("Missing inputs");
              }
 
             const userFromDB = await this.userDatabase.getUserByEmail(email);
