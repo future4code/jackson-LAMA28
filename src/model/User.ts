@@ -1,13 +1,13 @@
 import UnprocessableEntityError from "../error/UnprocessableEntityError";
 
-export class User{
+export class User {
     constructor(
     private id: string,
     private name: string,
     private email: string,
     private password: string,
     private role: UserRole
-    ){}
+    ) {}
 
     getId(){
         return this.id;
@@ -71,19 +71,19 @@ export class User{
     }
 }
 
-export interface UserInputDTO{
+export interface UserInputDTO {
     name: string;
     email: string;
     password: string;
     role: string;
 }
 
-export interface LoginInputDTO{
+export interface LoginInputDTO {
     email: string;
     password: string;
 }
 
-export enum UserRole{
+export enum UserRole {
     NORMAL = "NORMAL",
     ADMIN = "ADMIN"
 }

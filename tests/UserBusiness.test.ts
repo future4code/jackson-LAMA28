@@ -28,7 +28,7 @@ describe("Signup", ()=>{
       await userBusiness.createUser(user);
     } catch (error) {
       expect(error.code).toBe(422);
-      expect(error.message).toBe("Missing input");
+      expect(error.message).toBe("Missing inputs");
     }
   });
 
@@ -46,7 +46,7 @@ describe("Signup", ()=>{
       await userBusiness.createUser(user);
     } catch (error) {
       expect(error.code).toBe(422);
-      expect(error.message).toBe("Missing input");
+      expect(error.message).toBe("Missing inputs");
     }
   });
 
@@ -64,7 +64,7 @@ describe("Signup", ()=>{
       await userBusiness.createUser(user);
     } catch (error) {
       expect(error.code).toBe(422);
-      expect(error.message).toBe("Missing input");
+      expect(error.message).toBe("Missing inputs");
     }
   });
 
@@ -82,7 +82,7 @@ describe("Signup", ()=>{
       await userBusiness.createUser(user);
     } catch (error) {
       expect(error.code).toBe(422);
-      expect(error.message).toBe("Missing input");
+      expect(error.message).toBe("Missing inputs");
     }
   });
 
@@ -184,7 +184,7 @@ describe("Login", ()=>{
 
       await userBusiness.getUserByEmail(user)
     } catch (error) {
-      expect(error.message).toBe("Missing input")
+      expect(error.message).toBe("Missing inputs")
       expect(error.code).toBe(422)
     }
   });
@@ -200,7 +200,7 @@ describe("Login", ()=>{
 
       await userBusiness.getUserByEmail(user)
     } catch (error) {
-      expect(error.message).toBe("Missing input")
+      expect(error.message).toBe("Missing inputs")
       expect(error.code).toBe(422)
     }
   });
@@ -273,13 +273,15 @@ describe("Login", ()=>{
     const idGenerator = {} as any
     const hashManager = { compare: jest.fn(() => true) } as any
     const authenticator = { generateToken: jest.fn() } as any
-    const userDatabase = { getUserByEmail: jest.fn(() => User.toUserModel({
-            id: "id",
-            name: "Bananinha",
-            email: "ban@lama.com",
-            password: "123456",
-            role: "ADMIN"
-          }))} as any
+    const userDatabase = { 
+      getUserByEmail: jest.fn(() => User.toUserModel({
+        id: "id",
+        name: "Bananinha",
+        email: "ban@lama.com",
+        password: "123456",
+        role: "ADMIN"
+      }))
+    } as any
   
     const userBusiness: UserBusiness = new UserBusiness(
       idGenerator,
