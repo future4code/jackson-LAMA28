@@ -273,13 +273,15 @@ describe("Login", ()=>{
     const idGenerator = {} as any
     const hashManager = { compare: jest.fn(() => true) } as any
     const authenticator = { generateToken: jest.fn() } as any
-    const userDatabase = { getUserByEmail: jest.fn(() => User.toUserModel({
-            id: "id",
-            name: "Bananinha",
-            email: "ban@lama.com",
-            password: "123456",
-            role: "ADMIN"
-          }))} as any
+    const userDatabase = { 
+      getUserByEmail: jest.fn(() => User.toUserModel({
+        id: "id",
+        name: "Bananinha",
+        email: "ban@lama.com",
+        password: "123456",
+        role: "ADMIN"
+      }))
+    } as any
   
     const userBusiness: UserBusiness = new UserBusiness(
       idGenerator,

@@ -18,7 +18,8 @@ export class BandBusiness {
     try {
       const { name, musicGenre, responsible, userToken } = band;
 
-      const userData: AuthenticationData = this.authenticator.getData(userToken);
+      const userData: AuthenticationData 
+        = this.authenticator.getData(userToken);
       
       if (userData.role !== UserRole.ADMIN) {
         throw new UnauthorizedError("Invalid credentials");
