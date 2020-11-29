@@ -1,5 +1,4 @@
 import { BandBusiness } from "../src/business/BandBusiness";
-import { AuthenticationData } from "../src/services/Authenticator";
 
 describe("Register Band", ()=>{
   

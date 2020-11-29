@@ -5,7 +5,7 @@ export class UserDatabase extends BaseDatabase {
 
   private static TABLE_NAME = "LAMA_USERS";
 
-  public async createUser(
+  async createUser(
     user:User
   ): Promise<void> {
     try {
@@ -23,7 +23,7 @@ export class UserDatabase extends BaseDatabase {
     }
   }
 
-  public async getUserByEmail(
+  async getUserByEmail(
     email: string
   ): Promise<User> {
     try {

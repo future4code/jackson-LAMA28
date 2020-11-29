@@ -14,7 +14,7 @@ export class User {
     }
 
     getName(){
-        return this.name
+        return this.name;
     }
 
     getEmail(){
