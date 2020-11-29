@@ -1,4 +1,4 @@
-import UnprocessableEntityError from "../error/UnprocessableEntityError";
+import UnprocessableEntityError from "../errors/UnprocessableEntityError";
 
 export class Show {
   constructor(
@@ -79,6 +79,12 @@ export interface ShowInputDTO {
   endTime: number,
   bandId: string,
   userToken: string
+}
+
+export interface ShowTimeDTO {
+  weekDay: string,
+  startTime: number,
+  endTime: number
 }
 
 export enum ShowWeekDay {

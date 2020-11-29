@@ -1,7 +1,7 @@
 import bandDatabase, { BandDatabase } from "../data/BandDatabase";
-import ConflictError from "../error/ConflictError";
-import UnauthorizedError from "../error/UnauthorizedError";
-import UnprocessableEntityError from "../error/UnprocessableEntityError";
+import ConflictError from "../errors/ConflictError";
+import UnauthorizedError from "../errors/UnauthorizedError";
+import UnprocessableEntityError from "../errors/UnprocessableEntityError";
 import { Band, BandInputDTO, GetBandsInputDTO } from "../model/Band";
 import { UserRole } from "../model/User";
 import authenticator, { AuthenticationData, Authenticator } from "../services/Authenticator";

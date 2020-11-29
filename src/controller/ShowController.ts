@@ -25,3 +25,5 @@ export class ShowController {
     await BaseDatabase.destroyConnection();
   }
 }
+
+export default new ShowController();

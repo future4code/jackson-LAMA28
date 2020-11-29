@@ -36,7 +36,7 @@ export class BandDatabase extends BaseDatabase {
         .select("*")
         .from(BandDatabase.TABLE_NAME)
         .where(
-          id ? { id } : (search: any):any => {
+          id ? { id } : (search: any) => {
             search.where('name', 'LIKE', `%${name}%`)
           }
         );

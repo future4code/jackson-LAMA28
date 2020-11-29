@@ -1,4 +1,4 @@
-import UnprocessableEntityError from "../error/UnprocessableEntityError";
+import UnprocessableEntityError from "../errors/UnprocessableEntityError";
 
 export class User {
     constructor(
