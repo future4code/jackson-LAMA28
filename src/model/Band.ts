@@ -42,7 +42,7 @@ export class Band {
     return new Band(
         band.id,
         band.name,
-        band.musicGenre,
+        band.music_genre,
         band.responsible
     );
   }
@@ -53,4 +53,10 @@ export interface BandInputDTO {
   musicGenre: string,
   responsible: string,
   userToken: string
+}
+
+export interface GetBandsInputDTO {
+  userToken: string,
+  id?: string,
+  name?: string
 }

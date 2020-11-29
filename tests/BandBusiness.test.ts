@@ -1,5 +1,4 @@
 import { BandBusiness } from "../src/business/BandBusiness";
-import { AuthenticationData } from "../src/services/Authenticator";
 
 describe("Register Band", ()=>{
   
@@ -7,7 +6,9 @@ describe("Register Band", ()=>{
     const authenticator = {
       getData: jest.fn(() => ({id: "id",role: "NORMAL"}))
     } as any;
+
     const idGenerator = { generate: jest.fn() } as any;
+
     const bandDatabase = { registerBand: jest.fn() } as any;
 
     const bandBusiness: BandBusiness = new BandBusiness(
@@ -36,7 +37,9 @@ describe("Register Band", ()=>{
   const authenticator = {
     getData: jest.fn(() => ({id: "id",role: "ADMIN"}))
   } as any;
+
   const idGenerator = { generate: jest.fn() } as any;
+  
   const bandDatabase = { registerBand: jest.fn() } as any;
 
   const bandBusiness: BandBusiness = new BandBusiness(

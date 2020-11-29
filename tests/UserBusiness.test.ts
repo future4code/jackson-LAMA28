@@ -206,23 +206,24 @@ describe("Login", ()=>{
   });
 
   test("Error when 'email' is invalid", async ()=>{
-    const idGenerator = {} as any
-    const hashManager = { compare: jest.fn() } as any
-    const authenticator = { generateToken: jest.fn() } as any
+    const idGenerator = {} as any;
+    const hashManager = { compare: jest.fn() } as any;
+    const authenticator = { generateToken: jest.fn() } as any;
+
     const userDatabase = {
       getUserByEmail: jest.fn(
         () => undefined
       )
-    } as any
+    } as any;
   
     const userBusiness: UserBusiness = new UserBusiness(
       idGenerator,
       hashManager,
       authenticator,
       userDatabase
-    )
+    );
 
-    expect.assertions(2)
+    expect.assertions(2);
 
     try {
       const user = {
@@ -230,31 +231,34 @@ describe("Login", ()=>{
         password: "123456"
       };
 
-      await userBusiness.getUserByEmail(user)
+      await userBusiness.getUserByEmail(user);
     } catch (error) {
-      expect(error.message).toBe("Invalid credentials")
-      expect(error.code).toBe(401)
+      expect(error.message).toBe("Invalid credentials");
+      expect(error.code).toBe(401);
     }
   });
 
   test("Error when 'password' is invalid", async ()=>{
-    const idGenerator = {} as any
+    const idGenerator = {} as any;
+
     const hashManager = { 
       compare: jest.fn(
         () => false
       ) 
-    } as any
-    const authenticator = { generateToken: jest.fn() } as any
-    const userDatabase = { getUserByEmail: jest.fn() } as any
+    } as any;
+
+    const authenticator = { generateToken: jest.fn() } as any;
+
+    const userDatabase = { getUserByEmail: jest.fn() } as any;
   
     const userBusiness: UserBusiness = new UserBusiness(
       idGenerator,
       hashManager,
       authenticator,
       userDatabase
-    )
+    );
 
-    expect.assertions(2)
+    expect.assertions(2);
 
     try {
       const user = {
@@ -262,17 +266,20 @@ describe("Login", ()=>{
         password: "123456"
       };
 
-      await userBusiness.getUserByEmail(user)
+      await userBusiness.getUserByEmail(user);
     } catch (error) {
-      expect(error.message).toBe("Invalid credentials")
-      expect(error.code).toBe(401)
+      expect(error.message).toBe("Invalid credentials");
+      expect(error.code).toBe(401);
     }
   });
 
   test("Success case", async ()=>{
-    const idGenerator = {} as any
-    const hashManager = { compare: jest.fn(() => true) } as any
-    const authenticator = { generateToken: jest.fn() } as any
+    const idGenerator = {} as any;
+
+    const hashManager = { compare: jest.fn(() => true) } as any;
+
+    const authenticator = { generateToken: jest.fn() } as any;
+
     const userDatabase = { 
       getUserByEmail: jest.fn(() => User.toUserModel({
         id: "id",
@@ -281,16 +288,16 @@ describe("Login", ()=>{
         password: "123456",
         role: "ADMIN"
       }))
-    } as any
+    } as any;
   
     const userBusiness: UserBusiness = new UserBusiness(
       idGenerator,
       hashManager,
       authenticator,
       userDatabase
-    )
+    );
 
-    expect.assertions(1)
+    expect.assertions(1);
 
     try {
       const user = {
@@ -298,9 +305,9 @@ describe("Login", ()=>{
         password: "123456"
       };
 
-      const result = await userBusiness.getUserByEmail(user)
+      const result = await userBusiness.getUserByEmail(user);
 
-      expect(result).toBeDefined()
+      expect(result).toBeDefined();
     } catch (error) {
       
     }

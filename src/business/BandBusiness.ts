@@ -1,8 +1,8 @@
 import bandDatabase, { BandDatabase } from "../data/BandDatabase";
-import ConflictError from "../error/ConflictError";
-import UnauthorizedError from "../error/UnauthorizedError";
-import UnprocessableEntityError from "../error/UnprocessableEntityError";
-import { Band, BandInputDTO } from "../model/Band";
+import ConflictError from "../errors/ConflictError";
+import UnauthorizedError from "../errors/UnauthorizedError";
+import UnprocessableEntityError from "../errors/UnprocessableEntityError";
+import { Band, BandInputDTO, GetBandsInputDTO } from "../model/Band";
 import { UserRole } from "../model/User";
 import authenticator, { AuthenticationData, Authenticator } from "../services/Authenticator";
 import idGenerator, { IdGenerator } from "../services/IdGenerator";
@@ -29,7 +29,7 @@ export class BandBusiness {
         throw new UnprocessableEntityError("Missing inputs");
       }
 
-      const id = this.idGenerator.generate();
+      const id: string = this.idGenerator.generate();
 
       await this.bandDatabase.registerBand(
         new Band(
@@ -68,6 +68,37 @@ export class BandBusiness {
       if (code === 422) {
         throw new UnprocessableEntityError(message);
       }
+
+      throw new Error(message)
+    }
+  }
+
+  async getBands(
+    input: GetBandsInputDTO
+  ): Promise<{band: Band} | {bands: Band[]}> {
+    try {
+      this.authenticator.getData(input.userToken);
+
+      const bands: Band[] = await this.bandDatabase.getBands(input);
+
+      if (bands.length === 1) {
+        return {band:bands[0]}
+      }
+
+      return {bands}
+    } catch (error) {
+      const { message } = error;
+
+      if (
+        message === "jwt must be provided" ||
+        message === "jwt malformed" ||
+        message === "jwt expired" ||
+        message === "invalid token"
+      ) {
+        throw new UnauthorizedError("Invalid credentials");
+      }
+
+      throw new Error(message)
     }
   }
 }

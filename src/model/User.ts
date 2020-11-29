@@ -1,4 +1,4 @@
-import UnprocessableEntityError from "../error/UnprocessableEntityError";
+import UnprocessableEntityError from "../errors/UnprocessableEntityError";
 
 export class User {
     constructor(
@@ -14,7 +14,7 @@ export class User {
     }
 
     getName(){
-        return this.name
+        return this.name;
     }
 
     getEmail(){

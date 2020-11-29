@@ -1,11 +1,11 @@
 import { LoginInputDTO, User, UserInputDTO } from "../model/User";
-import UnauthorizedError from "../error/UnauthorizedError";
-import UnprocessableEntityError from "../error/UnprocessableEntityError";
+import UnauthorizedError from "../errors/UnauthorizedError";
+import UnprocessableEntityError from "../errors/UnprocessableEntityError";
 import authenticator,{ Authenticator } from "../services/Authenticator";
 import hashManager, { HashManager } from "../services/HashManager";
 import idGenerator, { IdGenerator } from "../services/IdGenerator";
 import userDatabase, { UserDatabase } from "../data/UserDatabase";
-import ConflictError from "../error/ConflictError";
+import ConflictError from "../errors/ConflictError";
 
 export class UserBusiness {
 
