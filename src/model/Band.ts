@@ -51,12 +51,10 @@ export class Band {
 export interface BandInputDTO {
   name: string,
   musicGenre: string,
-  responsible: string,
-  userToken: string
+  responsible: string
 }
 
 export interface GetBandsInputDTO {
-  userToken: string,
   id?: string,
   name?: string
 }

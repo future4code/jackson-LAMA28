@@ -77,8 +77,7 @@ export interface ShowInputDTO {
   weekDay: string,
   startTime: number,
   endTime: number,
-  bandId: string,
-  userToken: string
+  bandId: string
 }
 
 export interface ShowTimeDTO {
@@ -87,12 +86,11 @@ export interface ShowTimeDTO {
   endTime: number
 }
 
-export interface DayShowDTO {
-  day: string,
-  userToken: string
+export interface DayShowsInputDTO {
+  day: string
 }
 
-export interface DayShowsData {
+export interface DayShowsOutputDTO {
   name: string,
   musicGenre: string
 }

@@ -14,9 +14,9 @@ export class BandBusiness {
     private bandDatabase: BandDatabase
   ){}
 
-  async registerBand(band: BandInputDTO):Promise<void> {
+  async registerBand(band: BandInputDTO, userToken: string):Promise<void> {
     try {
-      const { name, musicGenre, responsible, userToken } = band;
+      const { name, musicGenre, responsible } = band;
 
       const userData: AuthenticationData 
         = this.authenticator.getData(userToken);
@@ -74,10 +74,10 @@ export class BandBusiness {
   }
 
   async getBands(
-    input: GetBandsInputDTO
+    input: GetBandsInputDTO, userToken: string
   ): Promise<{band: Band} | {bands: Band[]}> {
     try {
-      this.authenticator.getData(input.userToken);
+      this.authenticator.getData(userToken);
 
       const bands: Band[] = await this.bandDatabase.getBands(input);
 

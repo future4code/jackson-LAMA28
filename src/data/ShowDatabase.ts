@@ -1,4 +1,4 @@
-import { DayShowsData, Show, ShowTimeDTO, ShowWeekDay } from "../model/Show";
+import { DayShowsOutputDTO, Show, ShowTimeDTO, ShowWeekDay } from "../model/Show";
 import BandDatabase from "./BandDatabase";
 import BaseDatabase from "./BaseDatabase";
 
@@ -15,11 +15,9 @@ export class ShowDatabase extends BaseDatabase {
       const result = await this.getConnection()
         .select("*")
         .from(ShowDatabase.TABLE_NAME)
-        .where(function() {
-          this
-            .whereBetween('start_time', [startTime+0.1, endTime-0.1])
-            .orWhereBetween('end_time', [startTime+0.1, endTime-0.1])
-        }).andWhere('week_day', weekDay);
+        .where('week_day', weekDay)
+        .andWhere('start_time', '<', endTime)
+        .andWhere('end_time', '>', endTime);
       
       return result.map((show: any) => {
         return Show.toShowModel(show);
@@ -49,7 +47,7 @@ export class ShowDatabase extends BaseDatabase {
 
   async getDayShows(
     day:ShowWeekDay
-  ):Promise<DayShowsData[]> {
+  ):Promise<DayShowsOutputDTO[]> {
     try {
       const result = await this.getConnection()
         .from(`${ShowDatabase.TABLE_NAME} as s`)
@@ -60,14 +58,12 @@ export class ShowDatabase extends BaseDatabase {
         )
         .select('b.name', 'b.music_genre')
         .where({ week_day: day })
-        .orderBy('start_time')
+        .orderBy('start_time');
       
-      return result.map((show: any) => (
-        {
+      return result.map((show: any) => ({
           name: show.name,
           musicGenre: show.music_genre
-        }
-      ))
+      }));
     } catch (error) {
       throw new Error(error.sqlMessage || error.message);
     }

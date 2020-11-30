@@ -10,10 +10,12 @@ export class BandController {
         name: req.body.name,
         musicGenre: req.body.musicGenre,
         responsible: req.body.responsible,
-        userToken: req.headers.authorization as string
       };
 
-      await BandBusiness.registerBand(input);
+      await BandBusiness.registerBand(
+        input,
+        req.headers.authorization as string
+        );
 
       res.status(201).end();
     } catch (error) {
@@ -27,13 +29,12 @@ export class BandController {
   async getBands(req:Request, res:Response):Promise<void> {
     try {
       const input: GetBandsInputDTO = {
-        userToken: req.headers.authorization as string,
         id: req.params.id,
         name: req.query.name as string
       };
 
       const result: {band: Band} | {bands: Band[]}
-        = await BandBusiness.getBands(input);
+        = await BandBusiness.getBands(input, req.headers.authorization as string);
 
       res.status(200).send(result);
     } catch (error) {
