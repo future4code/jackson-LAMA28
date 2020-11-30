@@ -1,4 +1,5 @@
-import { Show, ShowTimeDTO } from "../model/Show";
+import { DayShowsData, Show, ShowTimeDTO, ShowWeekDay } from "../model/Show";
+import BandDatabase from "./BandDatabase";
 import BaseDatabase from "./BaseDatabase";
 
 export class ShowDatabase extends BaseDatabase {
@@ -41,6 +42,32 @@ export class ShowDatabase extends BaseDatabase {
           band_id: show.getBandId()
         })
         .into(ShowDatabase.TABLE_NAME);
+    } catch (error) {
+      throw new Error(error.sqlMessage || error.message);
+    }
+  }
+
+  async getDayShows(
+    day:ShowWeekDay
+  ):Promise<DayShowsData[]> {
+    try {
+      const result = await this.getConnection()
+        .from(`${ShowDatabase.TABLE_NAME} as s`)
+        .join(
+          `${BandDatabase.getTable()} as b`,
+          's.band_id',
+          'b.id'
+        )
+        .select('b.name', 'b.music_genre')
+        .where({ week_day: day })
+        .orderBy('start_time')
+      
+      return result.map((show: any) => (
+        {
+          name: show.name,
+          musicGenre: show.music_genre
+        }
+      ))
     } catch (error) {
       throw new Error(error.sqlMessage || error.message);
     }

@@ -2,7 +2,7 @@ import showDatabase, { ShowDatabase } from "../data/ShowDatabase";
 import ConflictError from "../errors/ConflictError";
 import UnauthorizedError from "../errors/UnauthorizedError";
 import UnprocessableEntityError from "../errors/UnprocessableEntityError";
-import { Show, ShowInputDTO, ShowTimeDTO } from "../model/Show";
+import { DayShowDTO, DayShowsData, Show, ShowInputDTO, ShowTimeDTO, ShowWeekDay } from "../model/Show";
 import { UserRole } from "../model/User";
 import authenticator, { AuthenticationData, Authenticator } from "../services/Authenticator";
 import idGenerator, { IdGenerator } from "../services/IdGenerator";
@@ -84,7 +84,40 @@ export class ShowBusiness {
 
       throw new Error(error.message);
     }
-  }
+  };
+
+  async getDayShows(input: DayShowDTO):Promise<DayShowsData[]> {
+    try {
+      if (!input.day) {
+        throw new UnprocessableEntityError("Missing input");
+      }
+
+      const day: ShowWeekDay = Show.stringToShowWeekDay(input.day);
+
+      this.authenticator.getData(input.userToken);
+
+      const result = await this.showDatabase.getDayShows(day);
+
+      return result
+    } catch (error) {
+      const { code, message } = error;
+
+      if (
+        message === "jwt must be provided" ||
+        message === "jwt malformed" ||
+        message === "jwt expired" ||
+        message === "invalid token"
+      ) {
+        throw new UnauthorizedError("Invalid credentials");
+      }
+      
+      if (code === 422) {
+        throw new UnprocessableEntityError(message);
+      }
+
+      throw new Error(error.message);
+    }
+  };
 }
 
 export default new ShowBusiness(

@@ -213,4 +213,91 @@ describe("Add Show", ()=>{
     }
   });
 
-})
+});
+
+describe("Get Day Shows", ()=>{
+  const authenticator = { generateToken: jest.fn() } as any;
+  const idGenerator = { generate: jest.fn() } as any;
+  const showDatabase = { getDayShows: jest.fn() } as any;
+
+  const showBusiness: ShowBusiness = new ShowBusiness(
+    authenticator,
+    idGenerator,
+    showDatabase
+  );
+
+  test("Error when 'day' query is empty", async ()=>{
+    expect.assertions(2);
+
+    try {
+      const input = {
+        day: "",
+        userToken: "token"
+      }
+
+      await showBusiness.getDayShows(input);
+    } catch (error) {
+      expect(error.code).toBe(422);
+      expect(error.message).toBe("Missing input");
+    }
+  });
+
+  test("Error when 'day' query is invalid", async ()=>{
+    expect.assertions(2);
+
+    try {
+      const input = {
+        day: "thrusday",
+        userToken: "token"
+      }
+
+      await showBusiness.getDayShows(input);
+    } catch (error) {
+      expect(error.code).toBe(422);
+      expect(error.message).toBe("Invalid show day");
+    }
+  });
+
+  test("Success case", async ()=>{
+    const authenticator = {
+      getData: jest.fn(() => ({id: "id",role: "NORMAL"}))
+    } as any;
+
+    const idGenerator = { generate: jest.fn() } as any;
+
+    const showDatabase = { 
+      getDayShows: jest.fn(() => [
+        {
+          name: "Bad Canadians",
+          musicGenre: "roquinho gostoso"
+        },
+        {
+          name: "The Parking Lots",
+          musicGenre: "folk-punk"
+        }
+      ])
+    } as any;
+
+    const showBusiness: ShowBusiness = new ShowBusiness(
+      authenticator,
+      idGenerator,
+      showDatabase
+    );
+
+    expect.assertions(1);
+
+    try {
+      const input = {
+        day: "FRIDAY",
+        userToken: "token"
+      }
+
+      const result = await showBusiness.getDayShows(input);
+
+      expect(result).toBeDefined();
+    } catch (error) {
+    
+    }
+  });
+
+});

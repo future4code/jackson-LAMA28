@@ -87,6 +87,16 @@ export interface ShowTimeDTO {
   endTime: number
 }
 
+export interface DayShowDTO {
+  day: string,
+  userToken: string
+}
+
+export interface DayShowsData {
+  name: string,
+  musicGenre: string
+}
+
 export enum ShowWeekDay {
   FRIDAY = "FRIDAY",
   SATURDAY = "SATURDAY",
