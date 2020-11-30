@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import ShowBusiness from "../business/ShowBusiness";
 import BaseDatabase from "../data/BaseDatabase";
-import { Show, DayShowDTO, DayShowsData, ShowInputDTO } from "../model/Show";
+import { DayShowsInputDTO, DayShowsOutputDTO, ShowInputDTO } from "../model/Show";
 
 export class ShowController {
   async addShow(req:Request, res:Response):Promise<void> {
@@ -11,10 +11,9 @@ export class ShowController {
         startTime: req.body.startTime,
         endTime: req.body.endTime,
         bandId: req.body.bandId,
-        userToken: req.headers.authorization as string
       };
 
-      await ShowBusiness.addShow(input);
+      await ShowBusiness.addShow(input, req.headers.authorization as string);
 
       res.status(201).end();
     } catch (error) {
@@ -27,12 +26,14 @@ export class ShowController {
 
   async getDayShows(req:Request, res:Response):Promise<void> {
     try {
-      const input: DayShowDTO = {
-        day: req.query.day as string,
-        userToken: req.headers.authorization as string
+      const input: DayShowsInputDTO = {
+        day: req.query.day as string
       }
 
-      const result: DayShowsData[] = await ShowBusiness.getDayShows(input);
+      const result: DayShowsOutputDTO[] = await ShowBusiness.getDayShows(
+        input,
+        req.headers.authorization as string
+      );
 
       res.status(201).send(result);
     } catch (error) {

@@ -1,8 +1,11 @@
+import bandDatabase, { BandDatabase } from "../data/BandDatabase";
 import showDatabase, { ShowDatabase } from "../data/ShowDatabase";
 import ConflictError from "../errors/ConflictError";
+import NotFoundError from "../errors/NotFoundError";
 import UnauthorizedError from "../errors/UnauthorizedError";
 import UnprocessableEntityError from "../errors/UnprocessableEntityError";
-import { DayShowDTO, DayShowsData, Show, ShowInputDTO, ShowTimeDTO, ShowWeekDay } from "../model/Show";
+import { Band } from "../model/Band";
+import { DayShowsInputDTO, DayShowsOutputDTO, Show, ShowInputDTO, ShowTimeDTO, ShowWeekDay } from "../model/Show";
 import { UserRole } from "../model/User";
 import authenticator, { AuthenticationData, Authenticator } from "../services/Authenticator";
 import idGenerator, { IdGenerator } from "../services/IdGenerator";
@@ -11,12 +14,13 @@ export class ShowBusiness {
   constructor(
     private authenticator: Authenticator,
     private idGenerator: IdGenerator,
-    private showDatabase: ShowDatabase
+    private showDatabase: ShowDatabase,
+    private bandDatabase: BandDatabase
   ) {}
 
-  async addShow(show: ShowInputDTO):Promise<void> {
+  async addShow(show: ShowInputDTO, userToken: string):Promise<void> {
     try {
-      const { weekDay, startTime, endTime, bandId, userToken } = show;
+      const { weekDay, startTime, endTime, bandId } = show;
 
       const userData: AuthenticationData
         = this.authenticator.getData(userToken);
@@ -29,12 +33,14 @@ export class ShowBusiness {
         throw new UnprocessableEntityError("Missing inputs");
       }
 
-      if (startTime < 8 || startTime > 22) {
-        throw new UnprocessableEntityError("Invalid start time");
+      const band: Band[] = await this.bandDatabase.getBands({id: bandId});
+
+      if (!band.length) {
+        throw new NotFoundError("Band not found");
       }
-      
-      if (endTime < 9 || endTime < startTime || endTime > 23) {
-        throw new UnprocessableEntityError("Invalid end time");
+
+      if (startTime < 8 || endTime > 23 || endTime < startTime) {
+        throw new UnprocessableEntityError("Invalid show times");
       }
 
       const showTime: ShowTimeDTO = { weekDay, startTime, endTime };
@@ -74,6 +80,10 @@ export class ShowBusiness {
         throw new UnauthorizedError(message);
       }
 
+      if (code === 404) {
+        throw new NotFoundError(message);
+      }
+
       if (code === 409) {
         throw new ConflictError(message);
       }
@@ -86,17 +96,19 @@ export class ShowBusiness {
     }
   };
 
-  async getDayShows(input: DayShowDTO):Promise<DayShowsData[]> {
+  async getDayShows(
+    input: DayShowsInputDTO, userToken: string
+  ):Promise<DayShowsOutputDTO[]> {
     try {
       if (!input.day) {
         throw new UnprocessableEntityError("Missing input");
       }
 
-      const day: ShowWeekDay = Show.stringToShowWeekDay(input.day);
+      const weekDay: ShowWeekDay = Show.stringToShowWeekDay(input.day);
 
-      this.authenticator.getData(input.userToken);
+      this.authenticator.getData(userToken);
 
-      const result = await this.showDatabase.getDayShows(day);
+      const result = await this.showDatabase.getDayShows(weekDay);
 
       return result
     } catch (error) {
@@ -123,5 +135,6 @@ export class ShowBusiness {
 export default new ShowBusiness(
   authenticator,
   idGenerator,
-  showDatabase
+  showDatabase,
+  bandDatabase
 );

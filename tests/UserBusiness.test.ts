@@ -1,7 +1,7 @@
 import { UserBusiness } from "../src/business/UserBusiness"
 import { User } from "../src/model/User";
 
-describe("Signup", ()=>{
+describe.skip("Signup", ()=>{
   const idGenerator = { generate: jest.fn() } as any;
   const hashManager = { hash: jest.fn() } as any;
   const authenticator = { generateToken: jest.fn() } as any;
@@ -160,7 +160,7 @@ describe("Signup", ()=>{
   })
 });
 
-describe("Login", ()=>{
+describe.skip("Login", ()=>{
   const idGenerator = {} as any
   const hashManager = { compare: jest.fn() } as any
   const authenticator = { generateToken: jest.fn() } as any
