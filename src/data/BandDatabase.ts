@@ -5,7 +5,7 @@ export class BandDatabase extends BaseDatabase {
 
   private static TABLE_NAME = "LAMA_BANDS";
 
-  getTable(){
+  getTable(): string{
     return BandDatabase.TABLE_NAME
   }
 
